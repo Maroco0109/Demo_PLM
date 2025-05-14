@@ -1,69 +1,87 @@
 package com.maroco.demo_plm
 
 import android.content.Context
-import com.google.gson.Gson
+import org.json.JSONObject
+import java.io.BufferedReader
 import java.io.InputStreamReader
 
-data class TokenizerConfig(
-    val unk_token: String = "[UNK]",
-    val cls_token: String = "[CLS]",
-    val sep_token: String = "[SEP]",
-    val pad_token: String = "[PAD]"
-)
+class Tokenizer(context: Context, vocabFile: String, configFile: String) {
 
-class Tokenizer(
-    private val context: Context,
-    vocabFileName: String,
-    configFileName: String
-) {
     private val vocab: Map<String, Int>
-    private val config: TokenizerConfig
+    private val unkToken = "[UNK]"
+    private val clsToken = "[CLS]"
+    private val sepToken = "[SEP]"
+    private val padToken = "[PAD]"
+    private val maxLen = 64
+    private val doLowerCase: Boolean
 
     init {
-        vocab = loadVocabFromAssets(vocabFileName)
-        config = loadTokenizerConfigFromAssets(configFileName)
-    }
-
-    // vocab.txt 로딩
-    private fun loadVocabFromAssets(fileName: String): Map<String, Int> {
-        val vocab = mutableMapOf<String, Int>()
-        context.assets.open(fileName).bufferedReader().useLines { lines ->
-            lines.forEachIndexed { idx, token -> vocab[token.trim()] = idx }
+        // vocab.txt 로드
+        val vocabMap = mutableMapOf<String, Int>()
+        context.assets.open(vocabFile).bufferedReader().useLines { lines ->
+            lines.forEachIndexed { index, line ->
+                vocabMap[line.trim()] = index
+            }
         }
-        return vocab
+        vocab = vocabMap
+
+        // tokenizer_config.json 로드
+        val jsonStr = context.assets.open(configFile).bufferedReader().use { it.readText() }
+        val config = JSONObject(jsonStr)
+        doLowerCase = config.optBoolean("do_lower_case", true)
     }
 
-    // tokenizer_config.json 로딩
-    private fun loadTokenizerConfigFromAssets(fileName: String): TokenizerConfig {
-        val json = context.assets.open(fileName).bufferedReader().use { it.readText() }
-        return Gson().fromJson(json, TokenizerConfig::class.java)
-    }
+    private fun wordpieceTokenize(word: String): List<String> {
+        val tokens = mutableListOf<String>()
+        var start = 0
+        val length = word.length
 
-    // 입력 텍스트를 HuggingFace 스타일로 토큰화 + 인덱스 변환
-    fun tokenize(text: String, maxLen: Int = 64): Triple<LongArray, LongArray, LongArray> {
-        val clsId = vocab[config.cls_token] ?: 101
-        val sepId = vocab[config.sep_token] ?: 102
-        val padId = vocab[config.pad_token] ?: 0
-        val unkId = vocab[config.unk_token] ?: 100
+        while (start < length) {
+            var end = length
+            var subword: String? = null
 
-        // 현재는 띄어쓰기 기준 토큰화 (WordPiece 전처리 일부 생략됨)
-        val tokens = text.split(" ").map { vocab[it] ?: unkId }
+            while (start < end) {
+                var candidate = word.substring(start, end)
+                if (start > 0) candidate = "##$candidate"
+                if (vocab.containsKey(candidate)) {
+                    subword = candidate
+                    break
+                }
+                end--
+            }
 
-        val inputIds = mutableListOf(clsId)
-        inputIds.addAll(tokens.take(maxLen - 2))
-        inputIds.add(sepId)
-
-        while (inputIds.size < maxLen) {
-            inputIds.add(padId)
+            if (subword != null) {
+                tokens.add(subword)
+                start = end
+            } else {
+                tokens.add(unkToken)
+                break
+            }
         }
 
-        val attentionMask = LongArray(maxLen) { if (it < tokens.size + 2) 1 else 0 }
-        val tokenTypeIds = LongArray(maxLen) { 0 }
+        return tokens
+    }
+
+    fun tokenize(text: String): Triple<IntArray, IntArray, IntArray> {
+        val cleaned = if (doLowerCase) text.lowercase() else text
+        val words = cleaned.split(" ", "\n", "\t", "\r")
+        val wordpieceTokens = words.flatMap { wordpieceTokenize(it) }
+
+        val tokens = listOf(clsToken) + wordpieceTokens.take(maxLen - 2) + listOf(sepToken)
+        val inputIds = tokens.map { vocab[it] ?: vocab[unkToken] ?: 0 }
+        val attentionMask = List(inputIds.size) { 1 }
+        val tokenTypeIds = List(inputIds.size) { 0 }
+
+        // 패딩
+        val padLength = maxLen - inputIds.size
+        val paddedInputIds = inputIds + List(padLength) { vocab[padToken] ?: 0 }
+        val paddedAttentionMask = attentionMask + List(padLength) { 0 }
+        val paddedTokenTypeIds = tokenTypeIds + List(padLength) { 0 }
 
         return Triple(
-            inputIds.map { it.toLong() }.toLongArray(),
-            attentionMask,
-            tokenTypeIds
+            paddedInputIds.toIntArray(),
+            paddedAttentionMask.toIntArray(),
+            paddedTokenTypeIds.toIntArray()
         )
     }
 }

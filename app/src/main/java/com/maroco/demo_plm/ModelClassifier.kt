@@ -11,13 +11,17 @@ class ModelClassifier(
 ) {
     fun classify(text: String): Pair<Float, Float> {
         val (inputIds, attentionMask, tokenTypeIds) = tokenizer.tokenize(text)
+        val inputIdsLong = inputIds.map { it.toLong() }.toLongArray()
+        val attentionMaskLong = attentionMask.map { it.toLong() }.toLongArray()
+        val tokenTypeIdsLong = tokenTypeIds.map { it.toLong() }.toLongArray()
+
         val inputNames = session.inputNames.toList()
 
         val inputs = mutableMapOf<String, OnnxTensor>()
-        inputs[inputNames[0]] = OnnxTensor.createTensor(ortEnv, arrayOf(inputIds))
-        inputs[inputNames[1]] = OnnxTensor.createTensor(ortEnv, arrayOf(attentionMask))
+        inputs[inputNames[0]] = OnnxTensor.createTensor(ortEnv, arrayOf(inputIdsLong))
+        inputs[inputNames[1]] = OnnxTensor.createTensor(ortEnv, arrayOf(attentionMaskLong))
         if (inputNames.size > 2) {
-            inputs[inputNames[2]] = OnnxTensor.createTensor(ortEnv, arrayOf(tokenTypeIds))
+            inputs[inputNames[2]] = OnnxTensor.createTensor(ortEnv, arrayOf(tokenTypeIdsLong))
         }
 
         val result = session.run(inputs)
