@@ -2,17 +2,19 @@ package com.maroco.demo_plm
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager2.widget.ViewPager2
-import com.maroco.demo_plm.R
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var bottomNav: BottomNavigationView
     lateinit var sessionKoBert: OrtSession
     lateinit var sessionKoElectra: OrtSession
     lateinit var inboxMessages: List<String>
     lateinit var spamMessages: List<String>
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,21 +29,38 @@ class MainActivity : AppCompatActivity() {
         inboxMessages = SplashActivity.inboxMessages
         spamMessages = SplashActivity.spamMessages
 
-        // Load MainFragment with results
-        val fragment = MainFragment().apply {
-            arguments = Bundle().apply {
-                putStringArrayList("inbox", ArrayList(inboxMessages))
-                putStringArrayList("spam", ArrayList(spamMessages))
+        bottomNav = findViewById(R.id.bottom_navigation)
+
+        // 초기 Fragment
+        loadFragment(InputFragment())
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_input -> {
+                    loadFragment(InputFragment())
+                    true
+                }
+                R.id.nav_sms -> {
+                    loadFragment(SmsResultFragment())
+                    true
+                }
+                else -> false
             }
         }
+    }
 
+    private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, fragment)
+            .replace(R.id.fragmentContainer, fragment)
             .commit()
     }
 
     fun switchToPage(index: Int) {
-        val viewPager = findViewById<ViewPager2>(R.id.viewPager)
-        viewPager.currentItem = index
+        val nav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+        nav.selectedItemId = when (index) {
+            0 -> R.id.nav_input
+            1 -> R.id.nav_sms
+            else -> R.id.nav_input
+        }
     }
 }

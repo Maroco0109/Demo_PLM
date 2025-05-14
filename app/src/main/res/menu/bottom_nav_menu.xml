@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_input"
+        android:icon="@android:drawable/ic_menu_edit"
+        android:title="입력분석" />
+    <item
+        android:id="@+id/nav_sms"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="SMS 분류" />
+</menu>
