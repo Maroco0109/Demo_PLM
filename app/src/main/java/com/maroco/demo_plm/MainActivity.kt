@@ -12,8 +12,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNav: BottomNavigationView
     lateinit var sessionKoBert: OrtSession
     lateinit var sessionKoElectra: OrtSession
-    lateinit var inboxMessages: List<String>
-    lateinit var spamMessages: List<String>
+    lateinit var inboxMessages: List<Pair<String, Boolean>>
+    lateinit var spamMessages: List<Pair<String, Boolean>>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

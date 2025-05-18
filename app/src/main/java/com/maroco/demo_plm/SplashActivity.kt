@@ -1,3 +1,4 @@
+
 package com.maroco.demo_plm
 
 import android.Manifest
@@ -23,8 +24,8 @@ class SplashActivity : AppCompatActivity() {
     private lateinit var progressText: TextView
 
     companion object {
-        var inboxMessages: List<String> = listOf()
-        var spamMessages: List<String> = listOf()
+        var inboxMessages: List<Pair<String, Boolean>> = listOf()
+        var spamMessages: List<Pair<String, Boolean>> = listOf()
         private const val SMS_PERMISSION_REQUEST = 1001
     }
 
@@ -71,8 +72,8 @@ class SplashActivity : AppCompatActivity() {
             val classifierBert = ModelClassifier(ortEnv, tokenizerBert, sessionKoBert)
             val classifierElectra = ModelClassifier(ortEnv, tokenizerElectra, sessionKoElectra)
 
-            val inboxList = mutableListOf<String>()
-            val spamList = mutableListOf<String>()
+            val inboxList = mutableListOf<Pair<String, Boolean>>()
+            val spamList = mutableListOf<Pair<String, Boolean>>()
 
             val cursor = contentResolver.query(
                 Telephony.Sms.Inbox.CONTENT_URI,
@@ -98,10 +99,10 @@ class SplashActivity : AppCompatActivity() {
 
                     val isSpam = spam1 >= 70f && spam2 >= 70f
                     if (isSpam) {
-                        spamList.add(text)
+                        spamList.add(Pair(text, true))
                         Log.d("SMSClassifier", "→ 이 메시지는 스팸으로 분류됨")
                     } else {
-                        inboxList.add(text)
+                        inboxList.add(Pair(text, false))
                         Log.d("SMSClassifier", "→ 이 메시지는 인박스로 분류됨")
                     }
 

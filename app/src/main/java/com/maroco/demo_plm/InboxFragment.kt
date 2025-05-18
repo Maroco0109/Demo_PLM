@@ -1,3 +1,4 @@
+
 package com.maroco.demo_plm
 
 import android.os.Bundle
@@ -22,6 +23,6 @@ class InboxFragment : Fragment() {
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = SmsAdapter(SplashActivity.inboxMessages.map { it.first().toString() })
+        recyclerView.adapter = SmsAdapter(SplashActivity.inboxMessages)
     }
 }
