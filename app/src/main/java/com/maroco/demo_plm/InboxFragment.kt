@@ -21,9 +21,7 @@ class InboxFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        val inboxList = arguments?.getStringArrayList("inbox") ?: arrayListOf()
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = SmsAdapter(inboxList.map { Pair(it, false) })
+        recyclerView.adapter = SmsAdapter(SplashActivity.inboxMessages.map { it.first().toString() })
     }
 }

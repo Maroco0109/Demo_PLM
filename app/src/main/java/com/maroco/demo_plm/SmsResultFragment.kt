@@ -4,37 +4,46 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class SmsResultFragment : Fragment() {
 
+    private lateinit var recyclerViewInbox: RecyclerView
+    private lateinit var recyclerViewSpam: RecyclerView
+    private lateinit var inboxAdapter: SmsAdapter
+    private lateinit var spamAdapter: SmsAdapter
+
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_sms_result, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_sms, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        recyclerViewInbox = view.findViewById(R.id.recyclerViewInbox)
+        recyclerViewSpam = view.findViewById(R.id.recyclerViewSpam)
 
-        val tabLayout = view.findViewById<TabLayout>(R.id.tabLayoutSms)
-        val viewPager = view.findViewById<ViewPager2>(R.id.viewPagerSms)
+        recyclerViewInbox.layoutManager = LinearLayoutManager(requireContext())
+        recyclerViewSpam.layoutManager = LinearLayoutManager(requireContext())
 
-        val inboxList = arguments?.getStringArrayList("inbox") ?: arrayListOf()
-        val spamList = arguments?.getStringArrayList("spam") ?: arrayListOf()
+        val inboxList = SplashActivity.inboxMessages.map { it.first().toString() }
+        val spamList = SplashActivity.spamMessages.map { it.first().toString() }
 
-        viewPager.adapter = SmsResultPageAdapter(this, inboxList, spamList)
+        inboxAdapter = SmsAdapter(inboxList)
+        spamAdapter = SmsAdapter(spamList)
 
-        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = when (position) {
-                0 -> "Inbox"
-                1 -> "Spam"
-                else -> ""
-            }
-        }.attach()
+        recyclerViewInbox.adapter = inboxAdapter
+        recyclerViewSpam.adapter = spamAdapter
+
+        val inboxHeader: TextView = view.findViewById(R.id.inboxHeader)
+        val spamHeader: TextView = view.findViewById(R.id.spamHeader)
+
+        inboxHeader.text = "Inbox (${inboxList.size})"
+        spamHeader.text = "Spam (${spamList.size})"
+
+        return view
     }
 }

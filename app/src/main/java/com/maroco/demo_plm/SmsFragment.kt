@@ -17,7 +17,7 @@ import ai.onnxruntime.OrtEnvironment
 class SmsFragment : Fragment() {
 
     private lateinit var recyclerViewSms: RecyclerView
-    private val smsList = mutableListOf<Pair<String, Boolean>>() // (text, isSpam)
+    private val smsList = mutableListOf<String>() // 메시지 본문만 저장
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,7 +68,9 @@ class SmsFragment : Fragment() {
                 val (spam2, _) = classifierElectra.classify(body)
 
                 val isSpam = spam1 >= 60.0f && spam2 >= 60.0f
-                smsList.add(Pair(body, isSpam))
+                if (!isSpam) {
+                    smsList.add(body)
+                }
             }
         }
 

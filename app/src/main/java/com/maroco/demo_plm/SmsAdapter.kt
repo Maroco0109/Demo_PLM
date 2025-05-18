@@ -7,11 +7,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.maroco.demo_plm.R
 
-class SmsAdapter(private val smsList: List<Pair<String, Boolean>>) :
+class SmsAdapter(private val smsList: List<String>) :
     RecyclerView.Adapter<SmsAdapter.SmsViewHolder>() {
 
     class SmsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val typeText: TextView = itemView.findViewById(R.id.smsTypeText)
         val contentText: TextView = itemView.findViewById(R.id.smsBodyText)
     }
 
@@ -22,9 +21,7 @@ class SmsAdapter(private val smsList: List<Pair<String, Boolean>>) :
     }
 
     override fun onBindViewHolder(holder: SmsViewHolder, position: Int) {
-        val (message, isSpam) = smsList[position]
-        holder.typeText.text = if (isSpam) "Spam" else "Inbox"
-        holder.contentText.text = message
+        holder.contentText.text = smsList[position]
     }
 
     override fun getItemCount(): Int = smsList.size

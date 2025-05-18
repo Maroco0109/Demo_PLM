@@ -21,9 +21,7 @@ class SpamFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        val spamList = arguments?.getStringArrayList("spam") ?: arrayListOf()
-
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = SmsAdapter(spamList.map { Pair(it, true) })
+        recyclerView.adapter = SmsAdapter(SplashActivity.spamMessages.map { it.first().toString() })
     }
 }
