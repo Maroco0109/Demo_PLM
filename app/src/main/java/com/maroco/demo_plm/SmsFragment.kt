@@ -13,12 +13,15 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.tabs.TabLayout
 import ai.onnxruntime.OrtEnvironment
 
 class SmsFragment : Fragment() {
 
     private lateinit var recyclerViewSms: RecyclerView
-    private val smsList = mutableListOf<Pair<String, Boolean>>() // Pair로 변경
+    private lateinit var tabLayout: TabLayout
+    private val inboxList = mutableListOf<Pair<String, Boolean>>()
+    private val spamList = mutableListOf<Pair<String, Boolean>>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +34,23 @@ class SmsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerViewSms = view.findViewById(R.id.recyclerViewSms)
+        tabLayout = view.findViewById(R.id.tabLayout)
         recyclerViewSms.layoutManager = LinearLayoutManager(requireContext())
+
+        tabLayout.addTab(tabLayout.newTab().setText("Inbox"))
+        tabLayout.addTab(tabLayout.newTab().setText("Spam"))
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                recyclerViewSms.adapter = when (tab.position) {
+                    0 -> SmsAdapter(spamList)
+                    1 -> SmsAdapter(inboxList)
+                    else -> null
+                }
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
 
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_SMS)
             != PackageManager.PERMISSION_GRANTED
@@ -67,12 +86,13 @@ class SmsFragment : Fragment() {
                 val body = it.getString(bodyIndex)
                 val (spam1, _) = classifierBert.classify(body)
                 val (spam2, _) = classifierElectra.classify(body)
-
                 val isSpam = spam1 >= 60.0f && spam2 >= 60.0f
-                smsList.add(Pair(body, isSpam))
+                val pair = Pair(body, isSpam)
+                if (isSpam) spamList.add(pair) else inboxList.add(pair)
             }
         }
 
-        recyclerViewSms.adapter = SmsAdapter(smsList)
+        // 기본 탭은 Inbox
+        recyclerViewSms.adapter = SmsAdapter(inboxList)
     }
 }

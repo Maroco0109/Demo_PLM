@@ -1,46 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:minHeight="56dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:tabTextAppearance="@style/TabTextStyle"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/purple_500"
+        app:tabSelectedTextColor="@android:color/black"
+        app:tabTextColor="@android:color/darker_gray" />
 
-        <TextView
-            android:id="@+id/inboxHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Inbox"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="4dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewInbox"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/spamHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Spam"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:padding="4dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewSpam"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewSms"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-    </LinearLayout>
-</ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewSms"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
+</LinearLayout>
