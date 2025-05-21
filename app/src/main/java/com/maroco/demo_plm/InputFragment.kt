@@ -45,14 +45,17 @@ class InputFragment : Fragment() {
 
         val ortEnv = OrtEnvironment.getEnvironment()
 
-        val tokenizerBert = Tokenizer(requireContext(), "vocab_kobert.txt", "tokenizer_config_kobert.json")
-        val tokenizerElectra = Tokenizer(requireContext(), "vocab_koelectra.txt", "tokenizer_config_koelectra.json")
+        val tokenizerBert = Tokenizer(requireContext(), "vocab_kobert.txt", "tokenizer_config_kobert.json", subwordPrefix = "##")
+        val tokenizerElectra = Tokenizer(requireContext(), "vocab_koelectra.txt", "tokenizer_config_koelectra.json", subwordPrefix = "##")
+        val tokenizerRoberta = Tokenizer(requireContext(), "vocab_koroberta.txt", "tokenizer_config_koroberta.json", subwordPrefix = "Ġ")
 
         val sessionBert = (activity as? MainActivity)?.sessionKoBert ?: return
         val sessionElectra = (activity as? MainActivity)?.sessionKoElectra ?: return
+        val sessionKoRoberta = (activity as? MainActivity)?.sessionKoRoberta ?: return
 
         val classifierBert = ModelClassifier(ortEnv, tokenizerBert, sessionBert)
         val classifierElectra = ModelClassifier(ortEnv, tokenizerElectra, sessionElectra)
+        val classifierRoberta = ModelClassifier(ortEnv, tokenizerRoberta, sessionKoRoberta)
 
         val (inputIdsBert, _, _) = tokenizerBert.tokenize(text)
         val (inputIdsElectra, _, _) = tokenizerElectra.tokenize(text)
@@ -61,13 +64,17 @@ class InputFragment : Fragment() {
 
         val (spamBert, hamBert) = classifierBert.classify(text)
         val (spamElectra, hamElectra) = classifierElectra.classify(text)
+        val (spamRoberta, hamRoberta) = classifierRoberta.classify(text)
+        // Soft Voting: 두 모델 확률 평균
+        val spamEnsemble = (spamBert + spamElectra + spamRoberta) / 3
+        val hamEnsemble  = (hamBert  + hamElectra + hamRoberta) / 3
 
         Log.d("ModelBERT", "Spam: $spamBert, Ham: $hamBert")
         Log.d("ModelELECTRA", "Spam: $spamElectra, Ham: $hamElectra")
+        Log.d("ModelROBERTA", "Spam: $spamRoberta, Ham: $hamRoberta")
 
-        resultTextView.text = """ 
-            [KoBERT]   스팸 %.1f%%, 햄 %.1f%% 
-            [ELECTRA] 스팸 %.1f%%, 햄 %.1f%%
-        """.trimIndent().format(spamBert, hamBert, spamElectra, hamElectra)
+        resultTextView.text = """
+            [Ensemble] 스팸 %.1f%%, 햄 %.1f%%
+        """.trimIndent().format(spamEnsemble, hamEnsemble)
     }
 }

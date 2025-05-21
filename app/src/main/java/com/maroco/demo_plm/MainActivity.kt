@@ -12,6 +12,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var bottomNav: BottomNavigationView
     lateinit var sessionKoBert: OrtSession
     lateinit var sessionKoElectra: OrtSession
+    lateinit var sessionKoRoberta: OrtSession
     lateinit var inboxMessages: List<Pair<String, Boolean>>
     lateinit var spamMessages: List<Pair<String, Boolean>>
 
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         val ortEnv = OrtEnvironment.getEnvironment()
         sessionKoBert = ortEnv.createSession(assets.open("kobert_spam.onnx").readBytes())
         sessionKoElectra = ortEnv.createSession(assets.open("koelectra_spam.onnx").readBytes())
+        sessionKoRoberta = ortEnv.createSession(assets.open("koroberta_spam.onnx").readBytes())
 
         // Receive classified SMS results from SplashActivity
         inboxMessages = SplashActivity.inboxMessages
