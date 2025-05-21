@@ -59,8 +59,11 @@ class InputFragment : Fragment() {
 
         val (inputIdsBert, _, _) = tokenizerBert.tokenize(text)
         val (inputIdsElectra, _, _) = tokenizerElectra.tokenize(text)
+        val (inputIdsRoberta, _, _) = tokenizerRoberta.tokenize(text)
+
         Log.d("TokenizerBERT", "Input IDs: ${inputIdsBert.joinToString()}")
         Log.d("TokenizerELECTRA", "Input IDs: ${inputIdsElectra.joinToString()}")
+        Log.d("TokenizerRoberta", "Input IDs: ${inputIdsRoberta.joinToString()}")
 
         val (spamBert, hamBert) = classifierBert.classify(text)
         val (spamElectra, hamElectra) = classifierElectra.classify(text)
