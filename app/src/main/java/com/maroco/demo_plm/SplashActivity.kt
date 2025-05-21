@@ -105,7 +105,7 @@ class SplashActivity : AppCompatActivity() {
                     Log.d("ModelROBERTA", "Spam: $spam3")
 
                     val avgspam = (spam1 + spam2 + spam3) / 3
-                    val isSpam = avgspam >= 70.0f
+                    val isSpam = avgspam >= 65.0f
                     if (isSpam) {
                         spamList.add(Pair(text, true))
                         Log.d("SMSClassifier", "→ 이 메시지는 스팸으로 분류됨")
