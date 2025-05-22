@@ -6,6 +6,11 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
+import android.content.Intent
+import com.maroco.demo_plm.databinding.ActivityMainBinding  // ViewBinding 사용 시
+import com.maroco.demo_plm.InputFragment
+import com.maroco.demo_plm.SmsFragment
+import com.maroco.demo_plm.ui.IndicatorFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -15,6 +20,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var sessionKoRoberta: OrtSession
     lateinit var inboxMessages: List<Pair<String, Boolean>>
     lateinit var spamMessages: List<Pair<String, Boolean>>
+
+    // 모델 준비 상태 변수
+    companion object {
+        var isModelReady = false
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,11 +49,16 @@ class MainActivity : AppCompatActivity() {
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_input -> {
-                    loadFragment(InputFragment())
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, InputFragment())
+                        .commit()
                     true
                 }
                 R.id.nav_sms -> {
-                    loadFragment(SmsResultFragment())
+                    val fragment = if (isModelReady) SmsFragment() else IndicatorFragment()
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, fragment)
+                        .commit()
                     true
                 }
                 else -> false

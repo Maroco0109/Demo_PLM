@@ -31,6 +31,16 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 모델 로딩 수행
+        GlobalScope.launch(Dispatchers.IO) {
+            ModelManager.loadModels(applicationContext)
+            MainActivity.isModelReady = true
+        }
+
+        // 화면은 즉시 MainActivity로 이동
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
+        """
         setContentView(R.layout.activity_splash)
 
         progressBar = findViewById(R.id.progressBar)
@@ -48,6 +58,7 @@ class SplashActivity : AppCompatActivity() {
         } else {
             classifySmsInBackground()
         }
+        """
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
