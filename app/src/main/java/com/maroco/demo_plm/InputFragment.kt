@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import ai.onnxruntime.OrtEnvironment
+import com.maroco.demo_plm.ModelManager
 
 class InputFragment : Fragment() {
 
@@ -49,12 +50,12 @@ class InputFragment : Fragment() {
         val tokenizerElectra = Tokenizer(requireContext(), "vocab_koelectra.txt", "tokenizer_config_koelectra.json", subwordPrefix = "##")
         val tokenizerRoberta = Tokenizer(requireContext(), "vocab_koroberta.txt", "tokenizer_config_koroberta.json", subwordPrefix = "Ġ")
 
-        val sessionBert = (activity as? MainActivity)?.sessionKoBert ?: return
-        val sessionElectra = (activity as? MainActivity)?.sessionKoElectra ?: return
-        val sessionKoRoberta = (activity as? MainActivity)?.sessionKoRoberta ?: return
+        val sessionKoBert    = ModelManager.sessionKoBert
+        val sessionKoElectra = ModelManager.sessionKoElectra
+        val sessionKoRoberta = ModelManager.sessionKoRoberta
 
-        val classifierBert = ModelClassifier(ortEnv, tokenizerBert, sessionBert)
-        val classifierElectra = ModelClassifier(ortEnv, tokenizerElectra, sessionElectra)
+        val classifierBert    = ModelClassifier(ortEnv, tokenizerBert,    sessionKoBert)
+        val classifierElectra = ModelClassifier(ortEnv, tokenizerElectra, sessionKoElectra)
         val classifierRoberta = ModelClassifier(ortEnv, tokenizerRoberta, sessionKoRoberta)
 
         val (inputIdsBert, _, _) = tokenizerBert.tokenize(text)

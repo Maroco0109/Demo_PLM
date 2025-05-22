@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.maroco.demo_plm.MainActivity
 
 class InboxFragment : Fragment() {
 
@@ -21,8 +22,10 @@ class InboxFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val dataList = MainActivity.inboxMessages
+
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = SmsAdapter(SplashActivity.inboxMessages)
+        recyclerView.adapter = SmsAdapter(dataList)
     }
 }

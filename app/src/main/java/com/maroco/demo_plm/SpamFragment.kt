@@ -1,4 +1,3 @@
-
 package com.maroco.demo_plm
 
 import android.os.Bundle
@@ -8,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.maroco.demo_plm.MainActivity
+import com.maroco.demo_plm.SmsAdapter
 
 class SpamFragment : Fragment() {
 
@@ -21,8 +22,9 @@ class SpamFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val dataList = MainActivity.spamMessages
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = SmsAdapter(SplashActivity.spamMessages)
+        recyclerView.adapter = SmsAdapter(dataList)
     }
 }
