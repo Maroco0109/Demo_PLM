@@ -31,7 +31,7 @@ class Tokenizer(
         val jsonStr = context.assets.open(configFile).bufferedReader().readText()
         val config = JSONObject(jsonStr)
         doLowerCase = config.optBoolean("do_lower_case", true)
-        maxLen     = config.optInt("model_max_length", 64)
+        maxLen     = config.optInt("model_max_length", 128)
 
         // 3) special tokens: JSON에 있으면 우선, 없으면 기본값
         unkToken = config.optString("unk_token", "[UNK]")

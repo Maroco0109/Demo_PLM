@@ -94,9 +94,9 @@ class SmsFragment : Fragment() {
                 val (spam3, _) = classifierRoberta.classify(body)
 
                 // Soft Voting: 두 모델 스팸 확률 평균으로 판정
-                val avgSpam = (spam1 + spam2 + spam3) / 3
-                val isSpam  = avgSpam >= 65.0f
-
+                // val avgSpam = (spam1 + spam2 + spam3) / 3
+                // val isSpam = avgSpam >= 50.0f
+                val isSpam = (spam1 >= 50.0f) && (spam2 >= 50.0f) && (spam3 >= 50.0f)
                 Log.d("ModelBERT", "Spam: $spam1")
                 Log.d("ModelELECTRA", "Spam: $spam2")
                 Log.d("ModelROBERTA", "Spam: $spam3")

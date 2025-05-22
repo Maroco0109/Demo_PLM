@@ -104,14 +104,16 @@ class SplashActivity : AppCompatActivity() {
                     Log.d("ModelELECTRA", "Spam: $spam2")
                     Log.d("ModelROBERTA", "Spam: $spam3")
 
-                    val avgspam = (spam1 + spam2 + spam3) / 3
-                    val isSpam = avgspam >= 65.0f
+                    // Soft Voting
+                    // val avgspam = (spam1 + spam2 + spam3) / 3
+
+                    val isSpam = (spam1 >= 50.0f) && (spam2 >= 50.0f) && (spam3 >= 50.0f)
                     if (isSpam) {
                         spamList.add(Pair(text, true))
-                        Log.d("SMSClassifier", "→ 이 메시지는 스팸으로 분류됨")
+                        Log.d("SMSClassifier", "→ 이 메시지는 스팸으로 분류됨: B: $spam1, E: $spam2, R: $spam3")
                     } else {
                         inboxList.add(Pair(text, false))
-                        Log.d("SMSClassifier", "→ 이 메시지는 인박스로 분류됨")
+                        Log.d("SMSClassifier", "→ 이 메시지는 인박스로 분류됨: B: $spam1, E: $spam2, R: $spam3")
                     }
 
                     index++

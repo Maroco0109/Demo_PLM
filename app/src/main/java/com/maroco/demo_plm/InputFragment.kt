@@ -78,6 +78,9 @@ class InputFragment : Fragment() {
 
         resultTextView.text = """
             [Ensemble] 스팸 %.1f%%, 햄 %.1f%%
-        """.trimIndent().format(spamEnsemble, hamEnsemble)
+            [BERT] 스팸 %.1f%%, 햄 %.1f%%
+            [ELECTRA] 스팸 %.1f%%, 햄 %.1f%%
+            [ROBERTA] 스팸 %.1f%%, 햄 %.1f%%
+        """.trimIndent().format(spamEnsemble, hamEnsemble, spamBert, hamBert, spamElectra, hamElectra, spamRoberta, hamRoberta)
     }
 }
